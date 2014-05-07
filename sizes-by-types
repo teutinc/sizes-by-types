@@ -16,17 +16,17 @@ function usage {
 if [[ -z $1 ]]; then
     usage
 fi
-path=$1
-if [[ ! -d $path ]]; then
+path="$1"
+if [[ ! -d "$path" ]]; then
     echo "$0: $path is not a directory"
     exit 2
 fi
 
 # get all file types
-types=`find $path -type f |grep -o "\.[a-zA-Z]*$"|sort|uniq`
+types=`find "$path" -type f |grep -o "\.[a-zA-Z]*$"|sort|uniq`
 for type in $types; do
     # for each file, calculate the aggregate the size and count the number of files
-    size_and_nb=`find $path -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
+    size_and_nb=`find "$path" -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
     size_and_nb_splitted=(${size_and_nb//:/ })
 
     # print results
