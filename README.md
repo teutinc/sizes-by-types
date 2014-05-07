@@ -14,5 +14,7 @@ TODO
     - -b|--bytes -> print size in bytes
     - -s|--sort -> sort the results by size (default is ascending sort, and by ext if no sort is specified)
     - -r|--reverse-sort -> reverse sort
+    - -i|--ignore-case -> ignore cases for extensions
+    - -e|--exclude -> reverse of type option
 - Add a prettier output format, like du with some padding.
 - Maybe permit combination of parameters, for example -svh -> sorted, verbose and humand readable
