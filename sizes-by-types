@@ -14,7 +14,7 @@ usage() {
 usage: ${0##*/} [OPTIONS] path
 
 OPTIONS:
-    -t or --type [type]       -- specify the type of files [Not Yet Implemented]
+    -t or --type [type(s)]    -- specify the type(s) of files (types must be separated by :)
     -v or --verbose           -- verbose output [Not Yet Implemented]
     -h or --human-readable    -- display size in human readable format [Not Yet Implemented]
     -k or --kilobytes         -- display size in kilobytes [Not Yet Implemented]
@@ -34,7 +34,7 @@ EOF
 }
 
 # initialize customizable vars
-type=""
+types=""
 verbose=0
 unit="k"
 sort=0
@@ -42,7 +42,7 @@ sort=0
 verbose_vars() {
     cat << EOF
 === Parameters ===
-    + type=$type
+    + types=$types
     + unit=$unit
     + sort=$sort
     + verbose=$verbose
@@ -98,7 +98,7 @@ while :
 do
     case $1 in
         -t | --type)
-            type=$2
+            types="$types ${2/:/ }"
             shift 2
             ;;
         --verbose)
@@ -167,8 +167,10 @@ fi
 
 
 # get all file types
-types=`find "$path" -type f |grep -o "\.[a-zA-Z]*$"|grep -o "[a-zA-Z]*$"|sort|uniq`
-[[ $verbose > 0 ]] && nb=`echo -n "$types" | wc -l` && echo "=== Found $nb type(s) ==="
+if [[ -z $types ]]; then
+    types=`find "$path" -type f |grep -o "\.[a-zA-Z0-9]*$"|grep -o "[a-zA-Z0-9]*$"|sort|uniq`
+    [[ $verbose > 0 ]] && nb=`echo -n "$types" | wc -l` && echo "=== Found $nb type(s) ==="
+fi
 for type in $types; do
     [[ $verbose > 0 ]] && echo "=== Scanning for type: $type ==="
 
