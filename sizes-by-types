@@ -149,7 +149,7 @@ do
 done
 
 # verbose parameters
-[[ $verbose > 1 ]] && verbose_vars
+[[ $verbose > 0 ]] && verbose_vars
 
 # check if the path is defined
 if [[ -z $1 ]]; then
@@ -162,9 +162,16 @@ if [[ ! -d "$path" ]]; then
     exit 2
 fi
 
+# verbose path
+[[ $verbose > 0 ]] && echo "=== Path: $path ==="
+
+
 # get all file types
 types=`find "$path" -type f |grep -o "\.[a-zA-Z]*$"|grep -o "[a-zA-Z]*$"|sort|uniq`
+[[ $verbose > 0 ]] && nb=`echo -n "$types" | wc -l` && echo "=== Found $nb type(s) ==="
 for type in $types; do
+    [[ $verbose > 0 ]] && echo "=== Scanning for type: $type ==="
+
     # for each file, calculate the aggregate the size and count the number of files
     size_and_nb=`find "$path" -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
     size_and_nb_splitted=(${size_and_nb//:/ })
