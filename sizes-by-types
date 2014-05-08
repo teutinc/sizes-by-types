@@ -16,9 +16,8 @@ usage: ${0##*/} [OPTIONS] path
 OPTIONS:
     -t or --type [type(s)]    -- specify the type(s) of files (types must be separated by :)
     -v or --verbose           -- verbose output [Not Yet Implemented]
-    -h or --human-readable    -- display size in human readable format [Not Yet Implemented]
-    -k or --kilobytes         -- display size in kilobytes [Not Yet Implemented]
-    -b or --bytes             -- display size in bytes [Not Yet Implemented]
+    -h or --human-readable    -- display size in human readable format
+    -k or --kilobytes         -- display size in kilobytes
     -s or --sort              -- sort the results by their sizes (ascendingly) [Not Yet Implemented]
     -r or --reverse-sort      -- reverse sort [Not Yet Implemented]
     --help                    -- print help [Not Yet Implemented]
@@ -31,6 +30,42 @@ version() {
     cat << EOF
 ${0##*/} $VERSION
 EOF
+}
+
+# transform size into human readable format
+pretty_size() {
+    kb=$1
+
+    # try to convert into megabytes
+    tmpMB=$(bc <<< "scale=1; $kb/(1024)")
+    if [[ $tmpMB < 1 ]]; then
+        echo "${kb}K"
+        return
+    fi
+    if [[ $tmpMB = "1.0" ]]; then
+        echo "1M"
+        return
+    fi
+    if [[ ${tmpMB%.*} -lt 10 ]]; then
+        echo "${tmpMB}M"
+        return
+    fi
+
+    # try to convert into gigabytes
+    tmpGB=$(bc <<< "scale=1; $kb/(1024*1024)")
+    if [[ $tmpGB < 1 ]]; then
+        echo "${tmpMB%.*}M"
+        return
+    fi
+    if [[ $tmpGB = "1.0" ]]; then
+        echo "1G"
+        return
+    fi
+    if [[ ${tmpGB%.*} -lt 10 ]]; then
+        echo "${tmpGB}G"
+        return
+    fi
+    echo "${tmpGB%.*}G"
 }
 
 # initialize customizable vars
@@ -183,5 +218,10 @@ for type in $types; do
     if [[ ${size_and_nb_splitted[0]} > 1 ]]; then
         plural="s"
     fi
-    echo "${size_and_nb_splitted[1]}K for ${size_and_nb_splitted[0]} file$plural with extension \"$type\""
+
+    # get the size, and maybe pretty format it
+    size=${size_and_nb_splitted[1]}
+    if [[ $unit = "h" ]]; then size=$(pretty_size $size); fi
+
+    echo "$size for ${size_and_nb_splitted[0]} file$plural with extension \"$type\""
 done
