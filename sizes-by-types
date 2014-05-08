@@ -222,7 +222,8 @@ fi
 forced_types=1
 if [[ -z $types ]]; then
     forced_types=0
-    types=`find "$path" -type f |grep -o "\.[a-zA-Z0-9]*$"|grep -o "[a-zA-Z0-9]*$"|sort|uniq`
+    pattern="[a-zA-Z0-9_-]"
+    types=`find "$path" -type f |grep -o "\.$pattern*$"|grep -o "$pattern*$"|sort|uniq`
     [[ $verbose > 0 ]] && nb=`echo -n "$types" | wc -l` && echo "=== Found $nb type(s) ==="
 fi
 for type in $types; do
