@@ -3,18 +3,46 @@ sizes-by-types
 
 Bash script to get the sizes of files by their types in a specified path.
 
+Howto
+-----
+
+To use it just type something like: 
+```
+/path/to/script/sizes-by-types .
+```
+It should output somethig like:
+```
+8       foo (2)
+2910292 bar (123)
+```
+Meaning that there is two files with 'foo' extention having a total size of 8 kilobytes, and 123 files having bar extention for a total size of 2910292 kilobytes.
+
+If a line like this ```12      OTHERS (3)``` is appended at the end of the results, it means that there is 3 files that does not have a regular extention, and the total of size for those files is 12 kilobytes.
+
+For the script, a regular extention is something matching this regular expression:
+```
+\.[a-zA-Z0-9_-]*$
+```
+
+Options
+-------
+Options available are:
+```
+    -t or --type [type(s)]    -- specify the type(s) of files (types must be separated by :)
+    -v or --verbose           -- verbose output
+    -h or --human-readable    -- display size in human readable format
+    -k or --kilobytes         -- display size in kilobytes
+    --help                    -- print help
+    --version                 -- print version
+```
+
+
 TODO
 ----
 - Manage some options like:
-    - -t|--type [type]
-    - -v|--verbose -> verbose output
-    - --version -> print version
-    - -h|--human-readable -> print size in human readable format
-    - -k|--kilobytes -> print size in kilobytes
-    - -b|--bytes -> print size in bytes
-    - -s|--sort -> sort the results by size (default is ascending sort, and by ext if no sort is specified)
-    - -r|--reverse-sort -> reverse sort
-    - -i|--ignore-case -> ignore cases for extensions
-    - -e|--exclude -> reverse of type option
-- Add a prettier output format, like du with some padding.
-- Maybe permit combination of parameters, for example -svh -> sorted, verbose and humand readable
+```
+     -s|--sort -> sort the results by size (default is ascending sort, and by ext if no sort is specified)
+     -r|--reverse-sort -> reverse sort
+     -i|--ignore-case -> ignore cases for extensions
+     -e|--exclude -> reverse of type option
+```
