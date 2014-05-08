@@ -214,14 +214,12 @@ for type in $types; do
     size_and_nb_splitted=(${size_and_nb//:/ })
 
     # print results
-    plural=""
-    if [[ ${size_and_nb_splitted[0]} > 1 ]]; then
-        plural="s"
-    fi
-
-    # get the size, and maybe pretty format it
     size=${size_and_nb_splitted[1]}
-    if [[ $unit = "h" ]]; then size=$(pretty_size $size); fi
-
-    echo "$size for ${size_and_nb_splitted[0]} file$plural with extension \"$type\""
+    nb_files=${size_and_nb_splitted[0]}
+    if [[ $unit = "h" ]]; then
+        size=$(pretty_size $size);
+        printf '%4s %s (%s)\n' $size $type $nb_files
+    else
+        printf '%-7s %s (%s)\n' $size $type $nb_files
+    fi
 done
