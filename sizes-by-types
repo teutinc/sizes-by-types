@@ -15,13 +15,13 @@ usage: ${0##*/} [OPTIONS] path
 
 OPTIONS:
     -t or --type [type(s)]    -- specify the type(s) of files (types must be separated by :)
-    -v or --verbose           -- verbose output [Not Yet Implemented]
+    -v or --verbose           -- verbose output
     -h or --human-readable    -- display size in human readable format
     -k or --kilobytes         -- display size in kilobytes
     -s or --sort              -- sort the results by their sizes (ascendingly) [Not Yet Implemented]
     -r or --reverse-sort      -- reverse sort [Not Yet Implemented]
-    --help                    -- print help [Not Yet Implemented]
-    --version                 -- print version [Not Yet Implemented]
+    --help                    -- print help
+    --version                 -- print version
 EOF
 }
 
