@@ -4,7 +4,7 @@
 # Script to get the sizes by files type #
 #                                       #
 # @author Augustin Peyrard              #
-# @date 2014/05/06                      #
+DATE=2014/05/06
 VERSION=0.1
 #########################################
 
@@ -28,7 +28,7 @@ EOF
 # Display the version
 version() {
     cat << EOF
-${0##*/} $VERSION
+${0##*/} $VERSION (release date: $DATE)
 EOF
 }
 
