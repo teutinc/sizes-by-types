@@ -68,6 +68,23 @@ pretty_size() {
     echo "${tmpGB%.*}G"
 }
 
+# extract the result of the find, and print them
+extract_and_print_results() {
+    size_and_nb=$1
+    type=$2
+    size_and_nb_splitted=(${size_and_nb//:/ })
+
+    # print results
+    size=${size_and_nb_splitted[1]}
+    nb_files=${size_and_nb_splitted[0]}
+    if [[ $unit = "h" ]]; then
+        size=$(pretty_size $size);
+        printf '%4s %s (%s)\n' $size $type $nb_files
+    else
+        printf '%-7s %s (%s)\n' $size $type $nb_files
+    fi
+}
+
 # initialize customizable vars
 types=""
 verbose=0
@@ -202,7 +219,9 @@ fi
 
 
 # get all file types
+forced_types=1
 if [[ -z $types ]]; then
+    forced_types=0
     types=`find "$path" -type f |grep -o "\.[a-zA-Z0-9]*$"|grep -o "[a-zA-Z0-9]*$"|sort|uniq`
     [[ $verbose > 0 ]] && nb=`echo -n "$types" | wc -l` && echo "=== Found $nb type(s) ==="
 fi
@@ -211,15 +230,16 @@ for type in $types; do
 
     # for each file, calculate the aggregate the size and count the number of files
     size_and_nb=`find "$path" -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
-    size_and_nb_splitted=(${size_and_nb//:/ })
 
     # print results
-    size=${size_and_nb_splitted[1]}
-    nb_files=${size_and_nb_splitted[0]}
-    if [[ $unit = "h" ]]; then
-        size=$(pretty_size $size);
-        printf '%4s %s (%s)\n' $size $type $nb_files
-    else
-        printf '%-7s %s (%s)\n' $size $type $nb_files
-    fi
+    extract_and_print_results $size_and_nb $type
 done
+
+# analyze the size and the number of non parsed files (only if the types has not been forced)
+if [[ $forced_types = 0 ]]; then
+    [[ $verbose > 0 ]] && echo "=== Scaning for OTHERS files ==="
+    ftypes+=(-type f)
+    for type in $types; do ftypes+=(-and -not -name \"*.$type\"); done
+    size_and_nb=`eval find \"$path\" ${ftypes[@]} "-exec" "du" "-sk" "{}" "\;" "|" "awk '{nb++;total += \\$1} END {print nb\":\"total}'"`
+    if [[ ! $size_and_nb = ":" ]]; then extract_and_print_results $size_and_nb "OTHERS"; fi
+fi
