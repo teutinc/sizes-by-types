@@ -68,21 +68,28 @@ pretty_size() {
     echo "${tmpGB%.*}G"
 }
 
+printed_results=0
+total_size_and_nb="0:0"
 # extract the result of the find, and print them
 extract_and_print_results() {
     local size_and_nb=$1
     local type=$2
     local size_and_nb_splitted=(${size_and_nb//:/ })
+    local nb_files=${size_and_nb_splitted[0]}
+    local size=${size_and_nb_splitted[1]}
+
+    # update the total
+    local total=(${total_size_and_nb//:/ })
+    total_size_and_nb=$((${total[0]}+$nb_files))':'$((${total[1]}+$size))
 
     # print results
-    local size=${size_and_nb_splitted[1]}
-    local nb_files=${size_and_nb_splitted[0]}
     if [[ $unit = "h" ]]; then
         size=$(pretty_size $size);
         printf '%4s %s (%s)\n' $size $type $nb_files
     else
         printf '%-7s %s (%s)\n' $size $type $nb_files
     fi
+    printed_results=$((printed_results + 1))
 }
 
 # initialize customizable vars
@@ -243,4 +250,9 @@ if [[ $forced_types = 0 ]]; then
     for type in $types; do ftypes+=(-and -not -name \"*.$type\"); done
     size_and_nb=`eval find \"$path\" ${ftypes[@]} "-exec" "du" "-sk" "{}" "\;" "|" "awk '{nb++;total += \\$1} END {print nb\":\"total}'"`
     if [[ ! $size_and_nb = ":" ]]; then extract_and_print_results $size_and_nb "OTHERS"; fi
+fi
+
+# print the total lines, print the total sizes and number of files, only if more than one line has been printed
+if [[ $printed_results -gt 1 ]]; then
+    extract_and_print_results $total_size_and_nb TOTAL;
 fi
