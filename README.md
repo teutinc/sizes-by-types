@@ -6,7 +6,7 @@ Bash script to get the sizes of files by their types in a specified path.
 Howto
 -----
 
-To use it just type something like: 
+To use it just type something like:
 ```
 /path/to/script/sizes-by-types .
 ```
@@ -32,6 +32,8 @@ Options available are:
     -v or --verbose           -- verbose output
     -h or --human-readable    -- display size in human readable format
     -k or --kilobytes         -- display size in kilobytes
+    -s or --sort              -- sort the results by their sizes (ascendingly)
+    -r or --reverse-sort      -- reverse sort
     --help                    -- print help
     --version                 -- print version
 ```
@@ -41,8 +43,6 @@ TODO
 ----
 - Manage some options like:
 ```
-     -s|--sort -> sort the results by size (default is ascending sort, and by ext if no sort is specified)
-     -r|--reverse-sort -> reverse sort
      -i|--ignore-case -> ignore cases for extensions
      -e|--exclude -> reverse of type option
 ```

@@ -18,8 +18,8 @@ OPTIONS:
     -v or --verbose           -- verbose output
     -h or --human-readable    -- display size in human readable format
     -k or --kilobytes         -- display size in kilobytes
-    -s or --sort              -- sort the results by their sizes (ascendingly) [Not Yet Implemented]
-    -r or --reverse-sort      -- reverse sort [Not Yet Implemented]
+    -s or --sort              -- sort the results by their sizes (ascendingly)
+    -r or --reverse-sort      -- reverse sort
     --help                    -- print help
     --version                 -- print version
 EOF
@@ -70,10 +70,12 @@ pretty_size() {
 
 printed_results=0
 total_size_and_nb="0:0"
+buffer=""
 # extract the result of the find, and print them
 extract_and_print_results() {
     local size_and_nb=$1
     local type=$2
+    local bufferize=$3
     local size_and_nb_splitted=(${size_and_nb//:/ })
     local nb_files=${size_and_nb_splitted[0]}
     local size=${size_and_nb_splitted[1]}
@@ -82,13 +84,23 @@ extract_and_print_results() {
     local total=(${total_size_and_nb//:/ })
     total_size_and_nb=$((${total[0]}+$nb_files))':'$((${total[1]}+$size))
 
-    # print results
+    # generate result line
+    local line=""
     if [[ $unit = "h" ]]; then
-        size=$(pretty_size $size);
-        printf '%4s %s (%s)\n' $size $type $nb_files
+        size_h=$(pretty_size $size);
+        line=`printf '%4s %s (%s)' $size_h $type $nb_files`
     else
-        printf '%-7s %s (%s)\n' $size $type $nb_files
+        line=`printf '%-7s %s (%s)' $size $type $nb_files`
     fi
+
+    # print result (might be on screen, or in buffer)
+    if [[ -n $bufferize && $bufferize -gt 0 ]]; then
+        # print the size in the buffer, it will be used for sorting
+        buffer=$buffer`printf '%s %s%s' $size "$line" ':'`
+    else
+        printf '%s\n' "$line"
+    fi
+
     printed_results=$((printed_results + 1))
 }
 
@@ -177,11 +189,11 @@ do
             shift
             ;;
         --sort)
-            toggle_sort=1
+            toggle_sort 1
             shift
             ;;
         --reverse-sort)
-            toggle_sort=2
+            toggle_sort 2
             shift
             ;;
         --help)
@@ -240,7 +252,7 @@ for type in $types; do
     size_and_nb=`find "$path" -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
 
     # print results
-    extract_and_print_results $size_and_nb $type
+    extract_and_print_results $size_and_nb $type $sort
 done
 
 # analyze the size and the number of non parsed files (only if the types has not been forced)
@@ -249,7 +261,14 @@ if [[ $forced_types = 0 ]]; then
     ftypes+=(-type f)
     for type in $types; do ftypes+=(-and -not -name \"*.$type\"); done
     size_and_nb=`eval find \"$path\" ${ftypes[@]} "-exec" "du" "-sk" "{}" "\;" "|" "awk '{nb++;total += \\$1} END {print nb\":\"total}'"`
-    if [[ ! $size_and_nb = ":" ]]; then extract_and_print_results $size_and_nb "OTHERS"; fi
+    if [[ ! $size_and_nb = ":" ]]; then extract_and_print_results $size_and_nb "OTHERS" $sort; fi
+fi
+
+# check if some sorting is required
+if [[ $sort -gt 0 ]]; then
+    [[ $sort -eq 1 ]] && sort_param='' || sort_param='r'
+    # sort the buffer, but remove the size prefix, used only for sorting
+    echo -n "$buffer"|tr ':' '\n'|sort -n$sort_param|cut -d ' ' -f2-
 fi
 
 # print the total lines, print the total sizes and number of files, only if more than one line has been printed
