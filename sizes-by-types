@@ -173,7 +173,7 @@ do
             toggle_verbose
             shift
             ;;
-        --human_readable)
+        --human-readable)
             toggle_unit "h"
             shift
             ;;
