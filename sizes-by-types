@@ -146,9 +146,6 @@ parse_short_options() {
             k)
                 toggle_unit "k"
                 ;;
-            b)
-                toggle_unit "b"
-                ;;
             s)
                 toggle_sort 1
                 ;;
@@ -182,10 +179,6 @@ do
             ;;
         --kilobytes)
             toggle_unit "k"
-            shift
-            ;;
-        --bytes)
-            toggle_unit "b"
             shift
             ;;
         --sort)
