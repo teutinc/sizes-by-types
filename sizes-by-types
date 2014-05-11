@@ -166,7 +166,7 @@ while :
 do
     case $1 in
         -t | --type)
-            types="$types ${2/:/ }"
+            types="$types ${2//:/ }"
             shift 2
             ;;
         --verbose)
