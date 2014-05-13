@@ -245,7 +245,9 @@ for type in $types; do
     size_and_nb=`find "$path" -name "*$type" -exec du -sk {} \; | awk '{nb++;total += $1} END {print nb":"total}'`
 
     # print results
-    extract_and_print_results $size_and_nb $type $sort
+    if [[ $size_and_nb != ':' ]]; then
+        extract_and_print_results $size_and_nb $type $sort
+    fi
 done
 
 # analyze the size and the number of non parsed files (only if the types has not been forced)
