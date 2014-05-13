@@ -4,8 +4,8 @@
 # Script to get the sizes by files type #
 #                                       #
 # @author Augustin Peyrard              #
-DATE=2014/05/08
-VERSION=0.2
+DATE=2014/05/13
+VERSION=0.3
 #########################################
 
 # Display the help
